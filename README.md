@@ -12,7 +12,7 @@ A simple application that turns local video files into ascii!
 
 The application takes each frame of the video file and converts each pixel's brightness into ASCII characters, mapping dark pixels to dense characters and light ones to sparse characters and vice versa if inverted
 
-![Demo](bad_apple_ascii.gif)
+![Demo](assets/bad_apple_ascii.gif)
 
 ## How to use
 1. Click "Add Video"
