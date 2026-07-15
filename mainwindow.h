@@ -22,6 +22,7 @@ public:
 private slots:
     void on_pushButton_clicked();
     void on_pushButton_2_clicked();
+    void on_pushButton_3_clicked();
     void processFrame(const QVideoFrame &frame);
 
 private:
@@ -31,6 +32,7 @@ private:
     QAudioOutput* audioOutput;
     QVideoSink* videoSink;
     QString file;
+    bool newFile = false;
 
     int outWidth = 400;
 

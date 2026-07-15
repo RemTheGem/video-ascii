@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Add video to get started</string>
+     <string>Add video to get started!</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -33,7 +33,7 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>540</x>
+      <x>490</x>
       <y>0</y>
       <width>90</width>
       <height>29</height>
@@ -55,7 +55,7 @@
     <property name="font">
      <font>
       <family>Consolas</family>
-      <pointsize>6</pointsize>
+      <pointsize>4</pointsize>
      </font>
     </property>
     <property name="undoRedoEnabled">
@@ -71,7 +71,7 @@
    <widget class="QPushButton" name="pushButton_2">
     <property name="geometry">
      <rect>
-      <x>450</x>
+      <x>400</x>
       <y>0</y>
       <width>90</width>
       <height>29</height>
@@ -84,14 +84,35 @@
    <widget class="QCheckBox" name="checkBoxInvert">
     <property name="geometry">
      <rect>
-      <x>640</x>
+      <x>680</x>
       <y>0</y>
       <width>92</width>
-      <height>25</height>
+      <height>31</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <bold>false</bold>
+     </font>
     </property>
     <property name="text">
      <string>Invert</string>
+    </property>
+    <property name="tristate">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>0</y>
+      <width>90</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Pause</string>
     </property>
    </widget>
   </widget>

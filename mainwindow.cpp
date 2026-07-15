@@ -40,9 +40,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-
+    if(newFile){
     player->setSource(QUrl::fromLocalFile(file));
-
+        newFile = false;
+    }
     qDebug() << "reached first checkpoint";
     player->play();
 
@@ -57,9 +58,12 @@ void MainWindow::on_pushButton_2_clicked()
     }
 
     ui->label->setText("Selected: " + (file));
+    newFile = true;
 
 }
-
+void MainWindow::on_pushButton_3_clicked(){
+    player->pause();
+}
 void MainWindow::processFrame(const QVideoFrame &frame){
 
 {
@@ -68,8 +72,6 @@ void MainWindow::processFrame(const QVideoFrame &frame){
     if(cloneFrame.map(QVideoFrame::ReadOnly)){
 
         QImage image = cloneFrame.toImage();
-        if(image.isNull()) qDebug() << "No Image";
-
         if(!image.isNull()){
             qDebug() << "processing...";
             int outHeight = image.height() * outWidth / image.width() *0.45;
@@ -80,11 +82,7 @@ void MainWindow::processFrame(const QVideoFrame &frame){
             for (int y = 0; y < image.height(); y++) {
                 for (int x = 0; x < image.width(); x++) {
                     QRgb pixel = image.pixel(x,y);
-
-                    int gray =
-                        0.2126 * qRed(pixel) +
-                        0.7152 * qGreen(pixel) +
-                        0.0722 * qBlue(pixel);
+                    int gray = 0.2126 * qRed(pixel) + 0.7152 * qGreen(pixel) + 0.0722 * qBlue(pixel);
                     gray = (gray - 128) * 1.15 + 128;
                     gray = std::clamp(gray, 0, 255);
                     if (ui->checkBoxInvert->isChecked()){

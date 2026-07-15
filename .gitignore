@@ -82,3 +82,22 @@ CMakeLists.txt.user*
 .uic/
 /build*/
 /.qtcreator/
+
+# Qt build files
+build/
+*.user
+*.user.*
+*.qrc.depends
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# Compiled files
+*.exe
+*.dll
+*.o
+*.obj
+
+# Qt Creator
+*.pro.user
