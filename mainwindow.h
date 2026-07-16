@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QMediaPlayer>
 #include <QVideoFrame>
+#include <QElapsedTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -33,6 +34,8 @@ private:
     QVideoSink* videoSink;
     QString file;
     bool newFile = false;
+    QElapsedTimer timer;
+    const int targetIntervals = 33;
 
     int outWidth = 400;
 

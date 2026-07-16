@@ -46,6 +46,7 @@ void MainWindow::on_pushButton_clicked()
     }
     qDebug() << "reached first checkpoint";
     player->play();
+    timer.start();
 
 }
 void MainWindow::on_pushButton_2_clicked()
@@ -67,6 +68,8 @@ void MainWindow::on_pushButton_3_clicked(){
 void MainWindow::processFrame(const QVideoFrame &frame){
 
 {
+    if(timer.elapsed() < targetIntervals) return;
+    timer.restart();
     QVideoFrame cloneFrame = frame;
 
     if(cloneFrame.map(QVideoFrame::ReadOnly)){
