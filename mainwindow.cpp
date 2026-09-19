@@ -15,11 +15,11 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    // ui->textAscii->setLineWrapMode(QPlainTextEdit::NoWrap);
-    ui->textAscii->setContentsMargins(0,0,0,0);
-    ui->textAscii->setStyleSheet(
-        "QTextEdit { padding: 0px; }"
-        );
+    ui->textAscii->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
+    ui->textAscii->setLineWrapMode(QPlainTextEdit::NoWrap);
+    ui->textAscii->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->textAscii->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->textAscii->document()->setDocumentMargin(0);
     setWindowTitle("Video to ASCII");
     showMaximized();
     player = new QMediaPlayer;
@@ -90,9 +90,14 @@ void MainWindow::processFrame(const QVideoFrame &frame){
     timer.restart();
     QImage image = frame.toImage();
     if(image.isNull()) return;
-    const int columns = 200;
-    const int rows = columns * image.height() / image.width() / 2;
-    image = image.scaled(columns, rows, Qt::IgnoreAspectRatio, Qt::FastTransformation).convertToFormat(QImage::Format_Grayscale16);
+    const QSize box = ui->textAscii->viewport()->size();
+    const QFontMetrics fontMetrics(ui->textAscii->font());
+    const int cellWidth = fontMetrics.horizontalAdvance('@');
+    const int cellHeight = fontMetrics.lineSpacing();
+    const double scale = std::min(double(box.width())/image.width(), double(box.height())/image.height());
+    const int columns = std::max(1, int(image.width() * scale/cellWidth));
+    const int rows = std::max(1, int(image.height() * scale/cellHeight));
+    image = image.scaled(columns, rows, Qt::IgnoreAspectRatio, Qt::FastTransformation).convertToFormat(QImage::Format_Grayscale8);
     qDebug() << "processing...";
     QString chars = "@#S%?*+;:,.' ";
     QString result;
@@ -100,7 +105,6 @@ void MainWindow::processFrame(const QVideoFrame &frame){
     for (int y = 0; y < rows; y++) {
         const uchar *line = image.constScanLine(y);
         for (int x = 0; x < columns; x++) {
-            QRgb pixel = image.pixel(x,y);
             int gray = std::clamp(int((line[x]-128) * 1.15 + 128), 0, 255);
             if (ui->checkBoxInvert->isChecked()){
                 gray = 255 - gray;
@@ -110,8 +114,5 @@ void MainWindow::processFrame(const QVideoFrame &frame){
         result += "\n";
     }
     ui->textAscii->setPlainText(result);
-    ui->textAscii->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
-
-
     }
 }
