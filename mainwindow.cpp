@@ -54,6 +54,9 @@ void MainWindow::on_pushButton_clicked()
         newFile = false;
     }
     qDebug() << "reached first checkpoint";
+    if(camera->isActive()){
+        camera->stop();
+    }
     player->play();
     timer.start();
 
@@ -63,6 +66,7 @@ void MainWindow::on_Camera_clicked(){
         camera->stop();
     }
     else{
+        if(player->isPlaying()) player->pause();
         timer.start();
         camera->start();
     }
@@ -98,7 +102,6 @@ void MainWindow::processFrame(const QVideoFrame &frame){
     const int columns = std::max(1, int(image.width() * scale/cellWidth));
     const int rows = std::max(1, int(image.height() * scale/cellHeight));
     image = image.scaled(columns, rows, Qt::IgnoreAspectRatio, Qt::FastTransformation).convertToFormat(QImage::Format_Grayscale8);
-    qDebug() << "processing...";
     QString chars = "@#S%?*+;:,.' ";
     QString result;
 
