@@ -115,6 +115,19 @@
      <string>Pause</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="Camera">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>0</y>
+      <width>90</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Camera</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -122,7 +135,7 @@
      <x>0</x>
      <y>0</y>
      <width>1500</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>

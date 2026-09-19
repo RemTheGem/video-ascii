@@ -5,6 +5,9 @@
 #include <QMediaPlayer>
 #include <QVideoFrame>
 #include <QElapsedTimer>
+#include <QCamera>
+#include <QMediaCaptureSession>
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -24,6 +27,7 @@ private slots:
     void on_pushButton_clicked();
     void on_pushButton_2_clicked();
     void on_pushButton_3_clicked();
+    void on_Camera_clicked();
     void processFrame(const QVideoFrame &frame);
 
 private:
@@ -32,9 +36,12 @@ private:
     QMediaPlayer* player;
     QAudioOutput* audioOutput;
     QVideoSink* videoSink;
+    QVideoSink* cameraSink;
     QString file;
     bool newFile = false;
     QElapsedTimer timer;
+    QCamera *camera;
+    QMediaCaptureSession *captureSession;
     const int targetIntervals = 33;
 
     int outWidth = 400;

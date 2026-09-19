@@ -5,6 +5,8 @@
 #include <QAudioOutput>
 #include <QVideoSink>
 #include <QDebug>
+#include <QMediaDevices>
+#include <QVideoWidget>
 
 
 
@@ -23,12 +25,19 @@ MainWindow::MainWindow(QWidget *parent)
     player = new QMediaPlayer;
     audioOutput = new QAudioOutput;
     videoSink = new QVideoSink;
+    cameraSink = new QVideoSink;
+    camera = new QCamera(QMediaDevices::defaultVideoInput());
+    captureSession = new QMediaCaptureSession(this);
 
     player->setAudioOutput(audioOutput);
     audioOutput->setVolume(0.5);
     player->setVideoOutput(videoSink);
 
+    captureSession->setCamera(camera);
+    captureSession->setVideoSink(cameraSink);
+
     connect(videoSink, &QVideoSink::videoFrameChanged, this, &MainWindow::processFrame);
+    connect(cameraSink, &QVideoSink::videoFrameChanged, this, &MainWindow::processFrame);
 
 }
 
@@ -48,6 +57,15 @@ void MainWindow::on_pushButton_clicked()
     player->play();
     timer.start();
 
+}
+void MainWindow::on_Camera_clicked(){
+    if(camera->isActive()){
+        camera->stop();
+    }
+    else{
+        timer.start();
+        camera->start();
+    }
 }
 void MainWindow::on_pushButton_2_clicked()
 {
@@ -70,35 +88,30 @@ void MainWindow::processFrame(const QVideoFrame &frame){
 {
     if(timer.elapsed() < targetIntervals) return;
     timer.restart();
-    QVideoFrame cloneFrame = frame;
+    QImage image = frame.toImage();
+    if(image.isNull()) return;
+    const int columns = 200;
+    const int rows = columns * image.height() / image.width() / 2;
+    image = image.scaled(columns, rows, Qt::IgnoreAspectRatio, Qt::FastTransformation).convertToFormat(QImage::Format_Grayscale16);
+    qDebug() << "processing...";
+    QString chars = "@#S%?*+;:,.' ";
+    QString result;
 
-    if(cloneFrame.map(QVideoFrame::ReadOnly)){
-
-        QImage image = cloneFrame.toImage();
-        if(!image.isNull()){
-            qDebug() << "processing...";
-            int outHeight = image.height() * outWidth / image.width() *0.45;
-            image = image.scaled(outWidth, outHeight);
-            QString chars = "@#S%?*+;:,.' ";
-            QString result;
-
-            for (int y = 0; y < image.height(); y++) {
-                for (int x = 0; x < image.width(); x++) {
-                    QRgb pixel = image.pixel(x,y);
-                    int gray = 0.2126 * qRed(pixel) + 0.7152 * qGreen(pixel) + 0.0722 * qBlue(pixel);
-                    gray = (gray - 128) * 1.15 + 128;
-                    gray = std::clamp(gray, 0, 255);
-                    if (ui->checkBoxInvert->isChecked()){
-                        gray = 255 - gray;
-                    }
-                    int index = ((255-gray)*(chars.size()-1))/255;
-                    result += chars[index];
-                }
-                result += "\n";
+    for (int y = 0; y < rows; y++) {
+        const uchar *line = image.constScanLine(y);
+        for (int x = 0; x < columns; x++) {
+            QRgb pixel = image.pixel(x,y);
+            int gray = std::clamp(int((line[x]-128) * 1.15 + 128), 0, 255);
+            if (ui->checkBoxInvert->isChecked()){
+                gray = 255 - gray;
             }
-            ui->textAscii->setPlainText(result);
+            result += chars[((255 - gray) * (chars.size()-1))/255];
         }
-        cloneFrame.unmap();
+        result += "\n";
     }
+    ui->textAscii->setPlainText(result);
+    ui->textAscii->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
+
+
     }
 }
