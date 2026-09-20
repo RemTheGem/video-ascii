@@ -31,6 +31,8 @@ private slots:
     void on_ContrastSlider_valueChanged(int value);
     void processFrame(const QVideoFrame &frame);
 
+    void on_ColorButton_toggled(bool checked);
+
 private:
     Ui::MainWindow *ui;
     QImage currentImage;
@@ -45,6 +47,8 @@ private:
     QMediaCaptureSession *captureSession;
     const int targetIntervals = 33;
     double contrastThreshold = 1.15;
+    bool grayscaleFrame = true;
+    bool originalColorFrame = false;
 
     int outWidth = 400;
 

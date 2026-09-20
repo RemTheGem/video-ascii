@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QMediaDevices>
 #include <QVideoWidget>
+#include <QFileInfo>
 
 
 
@@ -80,8 +81,8 @@ void MainWindow::on_pushButton_2_clicked()
         ui->label->setText("No file selected");
         return;
     }
-
-    ui->label->setText("Selected: " + (file));
+    QFileInfo fileInfo(file);
+    ui->label->setText("Selected: " + fileInfo.fileName());
     newFile = true;
 
 }
@@ -105,21 +106,61 @@ void MainWindow::processFrame(const QVideoFrame &frame){
     const double scale = std::min(double(box.width())/image.width(), double(box.height())/image.height());
     const int columns = std::max(1, int(image.width() * scale/cellWidth));
     const int rows = std::max(1, int(image.height() * scale/cellHeight));
-    image = image.scaled(columns, rows, Qt::IgnoreAspectRatio, Qt::FastTransformation).convertToFormat(QImage::Format_Grayscale8);
-    QString chars = "@#S%?*+;:,.' ";
-    QString result;
+    if(grayscaleFrame){
+        image = image.scaled(columns, rows, Qt::IgnoreAspectRatio, Qt::FastTransformation).convertToFormat(QImage::Format_Grayscale8);
+        QString chars = "@#S%?*+;:,.' ";
+        QString result;
 
-    for (int y = 0; y < rows; y++) {
-        const uchar *line = image.constScanLine(y);
-        for (int x = 0; x < columns; x++) {
-            int gray = std::clamp(int((line[x]-128) * contrastThreshold + 128), 0, 255);
-            if (ui->checkBoxInvert->isChecked()){
-                gray = 255 - gray;
+        for (int y = 0; y < rows; y++) {
+            const uchar *line = image.constScanLine(y);
+            for (int x = 0; x < columns; x++) {
+                int gray = std::clamp(int((line[x]-128) * contrastThreshold + 128), 0, 255);
+                if (ui->checkBoxInvert->isChecked()){
+                    gray = 255 - gray;
+                }
+                result += chars[((255 - gray) * (chars.size()-1))/255];
             }
-            result += chars[((255 - gray) * (chars.size()-1))/255];
+            result += "\n";
         }
-        result += "\n";
+        ui->textAscii->setPlainText(result);
     }
-    ui->textAscii->setPlainText(result);
+    if(originalColorFrame){
+        image = image.scaled(columns, rows, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+        ui->textAscii->clear();
+        QTextCursor cursor(ui->textAscii->document());
+        cursor.beginEditBlock();
+        QString chars = "@#S%?*+;:,.' ";
+        QString result;
+        QTextCharFormat format;
+        QColor color;
+        QChar character;
+        for (int y = 0; y < rows; y++) {
+            // const uchar *line = image.constScanLine(y);
+            for (int x = 0; x < columns; x++) {
+                color = image.pixelColor(x, y);
+                int gray = qGray(color.rgb());
+                /*
+                if (ui->checkBoxInvert->isChecked()){
+                    gray = 255 - gray;
+                }
+                */
+                int index = qBound(0, ((255 - gray) *(chars.size()-1)/255), chars.size()-1);
+                character = chars[index];
+                format.setForeground(color);
+                cursor.insertText(character, format);
+                //result += chars[((255 - gray) * (chars.size()-1))/255];
+            }
+            //result += "\n";
+            cursor.insertText("\n");
+        }
+        cursor.endEditBlock();
+        //ui->textAscii->setPlainText(result);
+        }
     }
 }
+void MainWindow::on_ColorButton_toggled(bool checked)
+{
+    grayscaleFrame = !grayscaleFrame;
+    originalColorFrame = !originalColorFrame;
+}
+
