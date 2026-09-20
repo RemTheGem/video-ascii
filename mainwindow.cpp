@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->textAscii->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->textAscii->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->textAscii->document()->setDocumentMargin(0);
+    ui->ContrastSlider->setRange(100, 200);
+    ui->ContrastSlider->setValue(115);
     setWindowTitle("Video to ASCII");
     showMaximized();
     player = new QMediaPlayer;
@@ -53,7 +55,6 @@ void MainWindow::on_pushButton_clicked()
     player->setSource(QUrl::fromLocalFile(file));
         newFile = false;
     }
-    qDebug() << "reached first checkpoint";
     if(camera->isActive()){
         camera->stop();
     }
@@ -87,6 +88,9 @@ void MainWindow::on_pushButton_2_clicked()
 void MainWindow::on_pushButton_3_clicked(){
     player->pause();
 }
+void MainWindow::on_ContrastSlider_valueChanged(int value){
+    contrastThreshold = value / 100.0;
+}
 void MainWindow::processFrame(const QVideoFrame &frame){
 
 {
@@ -108,7 +112,7 @@ void MainWindow::processFrame(const QVideoFrame &frame){
     for (int y = 0; y < rows; y++) {
         const uchar *line = image.constScanLine(y);
         for (int x = 0; x < columns; x++) {
-            int gray = std::clamp(int((line[x]-128) * 1.15 + 128), 0, 255);
+            int gray = std::clamp(int((line[x]-128) * contrastThreshold + 128), 0, 255);
             if (ui->checkBoxInvert->isChecked()){
                 gray = 255 - gray;
             }

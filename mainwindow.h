@@ -28,6 +28,7 @@ private slots:
     void on_pushButton_2_clicked();
     void on_pushButton_3_clicked();
     void on_Camera_clicked();
+    void on_ContrastSlider_valueChanged(int value);
     void processFrame(const QVideoFrame &frame);
 
 private:
@@ -43,6 +44,7 @@ private:
     QCamera *camera;
     QMediaCaptureSession *captureSession;
     const int targetIntervals = 33;
+    double contrastThreshold = 1.15;
 
     int outWidth = 400;
 
