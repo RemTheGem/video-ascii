@@ -33,6 +33,8 @@ private slots:
 
     void on_ColorButton_toggled(bool checked);
 
+    void on_CopyFrameButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QImage currentImage;

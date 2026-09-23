@@ -8,6 +8,8 @@
 #include <QMediaDevices>
 #include <QVideoWidget>
 #include <QFileInfo>
+#include <QClipboard>
+#include <QApplication>
 
 
 
@@ -28,6 +30,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     setWindowTitle("Video to ASCII");
     showMaximized();
+    // shortcut to copy frame
+    QAction *copyAction = new QAction(this);
+    copyAction->setShortcut(QKeySequence(Qt::Key_Space));
+    addAction(copyAction);
     // create the media players, audio output and video sinks used for processing
     player = new QMediaPlayer;
     audioOutput = new QAudioOutput;
@@ -47,6 +53,8 @@ MainWindow::MainWindow(QWidget *parent)
     // connections to process each frame from the media player or the camera
     connect(videoSink, &QVideoSink::videoFrameChanged, this, &MainWindow::processFrame);
     connect(cameraSink, &QVideoSink::videoFrameChanged, this, &MainWindow::processFrame);
+    // connection for copying current frame
+    connect(copyAction, &QAction::triggered, this, MainWindow::on_CopyFrameButton_clicked);
 
 }
 
@@ -198,5 +206,11 @@ void MainWindow::on_ColorButton_toggled(bool checked)
     QTextCharFormat format;
     format.setForeground(Qt::white);
     ui->textAscii->setCurrentCharFormat(format);
+}
+
+
+void MainWindow::on_CopyFrameButton_clicked()
+{
+    QApplication::clipboard()->setText(ui->textAscii->toPlainText());
 }
 
