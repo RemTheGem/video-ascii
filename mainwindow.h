@@ -35,6 +35,8 @@ private slots:
 
     void on_CopyFrameButton_clicked();
 
+    void on_ZoomSlider_valueChanged(int value);
+
 private:
     Ui::MainWindow *ui;
     QImage currentImage;
@@ -49,10 +51,9 @@ private:
     QMediaCaptureSession *captureSession;
     const int targetIntervals = 33;
     double contrastThreshold = 1.15;
+    double zoomAmount = 1.0;
     bool grayscaleFrame = true;
     bool originalColorFrame = false;
-
-    int outWidth = 400;
 
 };
 #endif // MAINWINDOW_H

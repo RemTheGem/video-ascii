@@ -25,9 +25,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->textAscii->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->textAscii->document()->setDocumentMargin(0);
     // Contrast Slider
-    ui->ContrastSlider->setRange(100, 200);
-    ui->ContrastSlider->setValue(115);
-
+    ui->ContrastSlider->setRange(1000, 2000);
+    ui->ContrastSlider->setValue(1150);
+    // Zoom slider
+    ui->ZoomSlider->setRange(500, 2000);
+    ui->ZoomSlider->setValue(1000);
     setWindowTitle("Video to ASCII");
     showMaximized();
     // shortcut to copy frame
@@ -111,10 +113,7 @@ void MainWindow::on_pushButton_3_clicked(){
         camera->stop();
     }
 }
-// CONTRAST SLIDER: slider to increase or decrease contrast
-void MainWindow::on_ContrastSlider_valueChanged(int value){
-    contrastThreshold = value / 100.0;
-}
+
 // method to process every frame recieved from video input or camera feed
 void MainWindow::processFrame(const QVideoFrame &frame){
 
@@ -126,7 +125,7 @@ void MainWindow::processFrame(const QVideoFrame &frame){
     QImage image = frame.toImage();
     if(image.isNull()) return;
     // data to make the text window behave
-    const QSize box = ui->textAscii->viewport()->size();
+    const QSize box = ui->textAscii->viewport()->size() * zoomAmount;
     const QFontMetrics fontMetrics(ui->textAscii->font());
     const int cellWidth = fontMetrics.horizontalAdvance('@');
     const int cellHeight = fontMetrics.lineSpacing();
@@ -214,5 +213,14 @@ void MainWindow::on_ColorButton_toggled(bool checked)
 void MainWindow::on_CopyFrameButton_clicked()
 {
     QApplication::clipboard()->setText(ui->textAscii->toPlainText());
+}
+
+// CONTRAST SLIDER: slider to increase or decrease contrast
+void MainWindow::on_ContrastSlider_valueChanged(int value){
+    contrastThreshold = value / 1000.0;
+}
+void MainWindow::on_ZoomSlider_valueChanged(int value)
+{
+    zoomAmount = value / 1000.0;
 }
 
