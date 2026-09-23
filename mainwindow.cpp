@@ -127,6 +127,8 @@ void MainWindow::processFrame(const QVideoFrame &frame){
     if(grayscaleFrame){
         // scale the image to fit in our text window and turn it into grayscale
         image = image.scaled(columns, rows, Qt::IgnoreAspectRatio, Qt::FastTransformation).convertToFormat(QImage::Format_Grayscale8);
+        // clear previous output
+        ui->textAscii->clear();
         // characters to draw stuff
         QString chars = "@#S%?*+;:,.' ";
         QString result;
@@ -153,7 +155,7 @@ void MainWindow::processFrame(const QVideoFrame &frame){
     if(originalColorFrame){
         // scale the image to fit in our text window
         image = image.scaled(columns, rows, Qt::IgnoreAspectRatio, Qt::FastTransformation);
-        // clear previous output
+        // clear previous output and formatting
         ui->textAscii->clear();
         // create a cursor (needed in order to format our text)
         QTextCursor cursor(ui->textAscii->document());
@@ -190,7 +192,11 @@ void MainWindow::processFrame(const QVideoFrame &frame){
 // COLOR: checkbox to enable and disable color
 void MainWindow::on_ColorButton_toggled(bool checked)
 {
-    grayscaleFrame = !grayscaleFrame;
-    originalColorFrame = !originalColorFrame;
+    originalColorFrame = checked;
+    grayscaleFrame = !checked;
+    // reset formatting
+    QTextCharFormat format;
+    format.setForeground(Qt::white);
+    ui->textAscii->setCurrentCharFormat(format);
 }
 
