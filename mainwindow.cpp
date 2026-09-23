@@ -54,7 +54,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(videoSink, &QVideoSink::videoFrameChanged, this, &MainWindow::processFrame);
     connect(cameraSink, &QVideoSink::videoFrameChanged, this, &MainWindow::processFrame);
     // connection for copying current frame
-    connect(copyAction, &QAction::triggered, this, MainWindow::on_CopyFrameButton_clicked);
+    connect(copyAction, &QAction::triggered, this, [this](){
+        on_CopyFrameButton_clicked();
+    });
 
 }
 
